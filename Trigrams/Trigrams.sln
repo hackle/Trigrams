@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Trigrams", "Trigrams.fsproj", "{2BD57B9F-C83B-4E93-B6AA-3F1237B58058}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Trigrams.Runner", "..\Trigrams.Runner\Trigrams.Runner.fsproj", "{739698F0-C579-4589-AAF7-29F42694A28D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{2BD57B9F-C83B-4E93-B6AA-3F1237B58058}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2BD57B9F-C83B-4E93-B6AA-3F1237B58058}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2BD57B9F-C83B-4E93-B6AA-3F1237B58058}.Release|Any CPU.Build.0 = Release|Any CPU
+		{739698F0-C579-4589-AAF7-29F42694A28D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{739698F0-C579-4589-AAF7-29F42694A28D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{739698F0-C579-4589-AAF7-29F42694A28D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{739698F0-C579-4589-AAF7-29F42694A28D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

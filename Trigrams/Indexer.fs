@@ -23,12 +23,12 @@ module Indexer =
         rand'.Next(0, list |> List.length) 
         |> (fun i -> List.item i list)
 
-    let rec random words firstTwo =
+    let rec random (key: 'a * 'a) (nodes: Node<'a> list) =
         seq {
-            let w' = words |> List.tryFind (fun w -> w |> fst = firstTwo)
-            if w'.IsSome then 
-                let found = w'.Value |> snd
-                yield found |> pickRandom
-                for next in random words (firstTwo |> snd, found) do
+            let n' = nodes |> List.tryFind (fun w -> (w.First, w.Second) = key)
+            if n'.IsSome then 
+                let found = n'.Value.Third |> pickRandom
+                yield found
+                for next in random (key |> snd, found) nodes do
                     yield next
         }
