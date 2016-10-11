@@ -71,4 +71,11 @@ module Indexer =
             let returnT p = Some x, p
             TState returnT
 
+        member this.Delay(f: unit->TrigramState<'a>) = f()
+        member this.Zero() = TState (fun s -> Some (s |> snd), s)
+        member this.While(guard, (x: TrigramState<'a>)) =
+            match guard() with
+            | false -> this.Zero()
+            | true -> this.Bind(x, (fun _ -> this.While(guard, x)))
+
     let trigram = new TrigramStateBuilder()

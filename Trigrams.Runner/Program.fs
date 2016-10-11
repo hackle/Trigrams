@@ -14,7 +14,7 @@ let main argv =
     let wordRegex = new System.Text.RegularExpressions.Regex(@"[a-z']+|[\.\,;\!]", System.Text.RegularExpressions.RegexOptions.IgnoreCase)
     let skips = [ "."; ","; ";"; "!" ]
 
-    let firstWord =
+    let nodes =
         fileName
         |> System.IO.File.ReadAllText
         |> wordRegex.Matches
@@ -22,10 +22,17 @@ let main argv =
         |> List.ofSeq
         |> List.map (fun w -> w.Value)
         |> Indexer.index skips
-        |> (fun nodes -> Indexer.pickNext nodes (first2Words.[0], first2Words.[1]))
 
     printfn "Here we go (press space to get more words)"
     printf "%s %s" first2Words.[0] first2Words.[1]
+
+    
+    let pickFromNodes = Indexer.TState (Indexer.pickNext nodes)
+    Indexer.trigram {
+        while ' ' = System.Console.ReadKey().KeyChar do
+            let! x = pickFromNodes
+            x |> printf "%s"
+    } |> Indexer.runT (first2Words.[0], first2Words.[1]) |> ignore
     
     System.Console.ReadKey() |> ignore
     0 // return an integer exit code
