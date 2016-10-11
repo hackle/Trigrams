@@ -19,7 +19,7 @@ let main argv =
         |> List.ofSeq
         |> List.map (fun w -> w.Value)
         |> Indexer.index
-        |> Indexer.random (first2Words.[0], first2Words.[1])
+        |> Indexer.make (first2Words.[0], first2Words.[1])
 
     printfn "Here we go (press space to get more words)"
     printf "%s %s" first2Words.[0] first2Words.[1]

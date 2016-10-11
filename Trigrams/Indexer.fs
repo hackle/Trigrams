@@ -23,12 +23,20 @@ module Indexer =
         rand'.Next(0, list |> List.length) 
         |> (fun i -> List.item i list)
 
-    let rec random (key: 'a * 'a) (nodes: Node<'a> list) =
+    let pickMostUsed list =
+        list
+        |> List.groupBy id
+        |> List.sortByDescending (fun e -> e |> snd |> List.length)
+        |> List.head
+        |> fst
+
+
+    let rec make (key: 'a * 'a) (nodes: Node<'a> list) =
         seq {
             let n' = nodes |> List.tryFind (fun w -> (w.First, w.Second) = key)
             if n'.IsSome then 
-                let found = n'.Value.Third |> pickRandom
+                let found = n'.Value.Third |> pickMostUsed
                 yield found
-                for next in random (key |> snd, found) nodes do
+                for next in make (key |> snd, found) nodes do
                     yield next
         }
