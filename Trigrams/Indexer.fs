@@ -5,13 +5,17 @@ module Indexer =
 
     type Node<'a> = { First: 'a; Second: 'a; Third: 'a list }
 
-    let index (elements: 'a list) =
+    let index skips (elements: 'a list) =
+        let shouldSkip c =
+            List.contains c skips
 
         let rec index' remaining indexed =
             match remaining with
-            | x1::x2::x3::xs -> index' (x2::x3::xs) (((x1, x2), x3) :: indexed)
+            | x1::x2::x3::xs ->
+                let carry = ((x1, x2), x3) :: indexed
+                index' (x2::x3::xs) carry
             | _ -> indexed
-
+            
         index' elements []
         |> List.groupBy (fun e -> e |> fst)
         |> List.map (fun g -> { First = g |> fst |> fst;
@@ -23,20 +27,48 @@ module Indexer =
         rand'.Next(0, list |> List.length) 
         |> (fun i -> List.item i list)
 
+    let takeMax n list =
+        list
+        |> List.take (list |> List.length |> min n)
+
     let pickMostUsed list =
+        let pick' ls = 
+            ls 
+            |> takeMax 3
+            |> pickRandom
+        
         list
         |> List.groupBy id
         |> List.sortByDescending (fun e -> e |> snd |> List.length)
-        |> List.head
+        |> pick'
         |> fst
+        
+    type TrigramState<'a> = TState of (('a * 'a) -> 'a option * ('a * 'a))
+    let runT p (TState s) = s p
+    let getStateT = 
+        let getS' s = Some (s |> snd), s
+        TState getS'
 
+    let pickNext (nodes: Node<'a> list) (key: 'a * 'a) =
+        let n' = nodes |> List.tryFind (fun w -> (w.First, w.Second) = key)
+        match n' with
+        | None -> None, key
+        | Some x -> 
+            let found = x.Third |> pickRandom
+            Some found, (x.Second, found)
 
-    let rec make (key: 'a * 'a) (nodes: Node<'a> list) =
-        seq {
-            let n' = nodes |> List.tryFind (fun w -> (w.First, w.Second) = key)
-            if n'.IsSome then 
-                let found = n'.Value.Third |> pickMostUsed
-                yield found
-                for next in make (key |> snd, found) nodes do
-                    yield next
-        }
+    type TrigramStateBuilder() = 
+        member this.Bind((TState x), (f: ('a -> TrigramState<'a>))) =
+            let runState p =
+                let (ro, state') = x p
+                match ro with
+                | None -> None, state'
+                | Some r1 -> 
+                    f r1 |> runT state'
+            TState runState
+
+        member this.Return(x) = 
+            let returnT p = Some x, p
+            TState returnT
+
+    let trigram = new TrigramStateBuilder()

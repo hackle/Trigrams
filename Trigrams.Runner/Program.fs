@@ -8,32 +8,24 @@ let main argv =
     let fileName = @"E:\work\F#\great expectations.txt" //System.Console.ReadLine()
     printfn "First 2 words: "
     let first2Words = System.Console.ReadLine().Split([| ' ' |], 2)
-
-    let wordRegex = new System.Text.RegularExpressions.Regex(@"[a-z]+|[\.\,;\!]", System.Text.RegularExpressions.RegexOptions.IgnoreCase)
+    printfn "Count of words:"
+    let length = System.Console.ReadLine() |> int
     
-    let words =
+    let wordRegex = new System.Text.RegularExpressions.Regex(@"[a-z']+|[\.\,;\!]", System.Text.RegularExpressions.RegexOptions.IgnoreCase)
+    let skips = [ "."; ","; ";"; "!" ]
+
+    let firstWord =
         fileName
         |> System.IO.File.ReadAllText
         |> wordRegex.Matches
         |> (fun ms -> [ for m in ms do yield m ])
         |> List.ofSeq
         |> List.map (fun w -> w.Value)
-        |> Indexer.index
-        |> Indexer.make (first2Words.[0], first2Words.[1])
+        |> Indexer.index skips
+        |> (fun nodes -> Indexer.pickNext nodes (first2Words.[0], first2Words.[1]))
 
     printfn "Here we go (press space to get more words)"
     printf "%s %s" first2Words.[0] first2Words.[1]
-
-    let rec output ws = 
-        if ' ' = System.Console.ReadKey(true).KeyChar then
-            if ws |> Seq.isEmpty
-            then printf "(END)"
-            else
-                printf " %s" (ws |> Seq.head)
-                output (ws |> Seq.tail)
-        else printf "(END)"
-
-    output words
-
+    
     System.Console.ReadKey() |> ignore
     0 // return an integer exit code
