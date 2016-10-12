@@ -15,9 +15,8 @@ let main argv =
         fileName
         |> System.IO.File.ReadAllText
         |> wordRegex.Matches
-        |> (fun ms -> [ for m in ms do yield m ])
+        |> (fun ms -> [ for m in ms do yield m.Value ])
         |> List.ofSeq
-        |> List.map (fun w -> w.Value)
         |> Indexer.index
 
     printfn "Here we go (press space to get more words)"
