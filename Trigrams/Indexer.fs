@@ -5,10 +5,7 @@ module Indexer =
 
     type Node<'a> = { First: 'a; Second: 'a; Third: 'a list }
 
-    let index skips (elements: 'a list) =
-        let shouldSkip c =
-            List.contains c skips
-
+    let index (elements: 'a list) =
         let rec index' remaining indexed =
             match remaining with
             | x1::x2::x3::xs ->
@@ -26,22 +23,6 @@ module Indexer =
     let pickRandom list =
         rand'.Next(0, list |> List.length) 
         |> (fun i -> List.item i list)
-
-    let takeMax n list =
-        list
-        |> List.take (list |> List.length |> min n)
-
-    let pickMostUsed list =
-        let pick' ls = 
-            ls 
-            |> takeMax 3
-            |> pickRandom
-        
-        list
-        |> List.groupBy id
-        |> List.sortByDescending (fun e -> e |> snd |> List.length)
-        |> pick'
-        |> fst
         
     type TrigramState<'a> = TState of (('a * 'a) -> 'a option * ('a * 'a))
     let runT p (TState s) = s p

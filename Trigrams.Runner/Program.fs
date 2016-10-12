@@ -5,14 +5,11 @@ open Trigrams
 [<EntryPoint>]
 let main argv = 
     printfn "File name: "
-    let fileName = @"E:\work\F#\great expectations.txt" //System.Console.ReadLine()
+    let fileName = System.Console.ReadLine()
     printfn "First 2 words: "
     let first2Words = System.Console.ReadLine().Split([| ' ' |], 2)
-    printfn "Count of words:"
-    let length = System.Console.ReadLine() |> int
     
     let wordRegex = new System.Text.RegularExpressions.Regex(@"[a-z']+|[\.\,;\!]", System.Text.RegularExpressions.RegexOptions.IgnoreCase)
-    let skips = [ "."; ","; ";"; "!" ]
 
     let nodes =
         fileName
@@ -21,11 +18,10 @@ let main argv =
         |> (fun ms -> [ for m in ms do yield m ])
         |> List.ofSeq
         |> List.map (fun w -> w.Value)
-        |> Indexer.index skips
+        |> Indexer.index
 
     printfn "Here we go (press space to get more words)"
     printf "%s %s" first2Words.[0] first2Words.[1]
-
     
     let pickFromNodes = Indexer.TState (Indexer.pickNext nodes)
     Indexer.trigram {
